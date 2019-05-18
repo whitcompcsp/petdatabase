@@ -24,7 +24,7 @@ public class PetDatabase {
         PetDatabase database = new PetDatabase();
         
         // Initialize a scanner we'll need for getting input from the user
-        Scanner stdin = new Scanner(System.in);
+        stdin = new Scanner(System.in);
         
         // Loop forever until the user wishes to exit the program
         while(true) {
@@ -44,6 +44,11 @@ public class PetDatabase {
             
             // Choose what to do depending on the input
             switch(selection) {
+                // Add pets
+                case 2:
+                    database.consoleAddPets();
+                    break;
+                
                 // Anything unimplemented goes here
                 default:
                     throw new UnsupportedOperationException();
@@ -52,7 +57,52 @@ public class PetDatabase {
     }
     
     /**
+     * Create a new database of pets
+     */
+    public PetDatabase() {
+        pets = new ArrayList<>();
+    }
+    
+    /**
+     * Add a pet to the database
+     * @param pet pet to add to the database
+     */
+    public void addPet(Pet pet) {
+        pets.add(pet);
+    }
+    
+    /**
      * Array of pets in the database
      */
     private ArrayList<Pet> pets;
+    
+    /**
+     * Scanner object to get input from the user via standard input
+     */
+    private static Scanner stdin;
+    
+    /**
+     * Add pets in the command line
+     */
+    private void consoleAddPets() {
+        // Keep asking the user for pet information until "done" is typed
+        int petsAdded = 0;
+        while(true) {
+            System.out.print("add pet (name, age): ");
+            
+            // If the user types "done" then bail
+            String name = stdin.next();
+            if(name.equals("done")) {
+                break;
+            }
+            
+            // Add it
+            int age = stdin.nextInt();
+            this.addPet(new Pet(name, age));
+            petsAdded++;
+        }
+        
+        // Output how many pets were added.
+        System.out.printf("%d pet%s added.\n", petsAdded, petsAdded != 1 ? "s" : "");
+    }
 }
