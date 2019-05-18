@@ -103,6 +103,6 @@ public class PetDatabase {
         }
         
         // Output how many pets were added.
-        System.out.printf("%d pet%s added.\n", petsAdded, petsAdded != 1 ? "s" : "");
+        System.out.printf("%d pet%s added.\n", petsAdded, (petsAdded != 1) ? "s" : "");
     }
 }
