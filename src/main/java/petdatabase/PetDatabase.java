@@ -26,8 +26,14 @@ public class PetDatabase {
         // Initialize a scanner we'll need for getting input from the user
         stdin = new Scanner(System.in);
         
+        // Greet the user
+        System.out.println("Pet Database Program.");
+        
         // Loop forever until the user wishes to exit the program
         while(true) {
+            // Print out an empty line for padding
+            System.out.println();
+            
             // Ask the user what to do next
             System.out.println("What would you like to do?");
             System.out.println(" 1) View all pets");
@@ -41,6 +47,9 @@ public class PetDatabase {
             // Get the input
             System.out.print("Your choice: ");
             int selection = stdin.nextInt();
+            
+            // Print out another empty line for padding
+            System.out.println();
             
             // Choose what to do depending on the input
             switch(selection) {
