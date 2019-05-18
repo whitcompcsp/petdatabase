@@ -65,9 +65,14 @@ public class PetDatabase {
                     database.consoleAddPets();
                     break;
                     
-                // Search pets by age
+                // Search pets by name
                 case 5:
                     database.consoleViewPets(database.consoleSearchPetsByName());
+                    break;
+                    
+                // Search pets by age
+                case 6:
+                    database.consoleViewPets(database.consoleSearchPetsByAge());
                     break;
                     
                 // Exit
@@ -108,6 +113,26 @@ public class PetDatabase {
         // Add all pets with a matching name
         for(Pet pet : pets) {
             if(pet.getName().equalsIgnoreCase(name)) {
+                list.add(pet);
+            }
+        }
+        
+        // Return the list
+        return list;
+    }
+    
+    /**
+     * Search for pets by age
+     * @param age age to search
+     * @return list of pets that have the given name
+     */
+    public List<Pet> searchPetsByAge(int age) {
+        // Initialize list
+        ArrayList<Pet> list = new ArrayList<>();
+        
+        // Add all pets with a matching name
+        for(Pet pet : pets) {
+            if(pet.getAge() == age) {
                 list.add(pet);
             }
         }
@@ -172,7 +197,7 @@ public class PetDatabase {
     }
     
     /**
-     * Search for pets by name
+     * Search for pets by name using a name from standard input
      * @return list of pets to search
      */
     private List<Pet> consoleSearchPetsByName() {
@@ -182,5 +207,18 @@ public class PetDatabase {
         
         // Return the pets list
         return searchPetsByName(searchQuery);
+    }
+    
+    /**
+     * Search for pets by age using an age from standard input
+     * @return list of pets to search
+     */
+    private List<Pet> consoleSearchPetsByAge() {
+        // Ask for a search query
+        System.out.print("Enter age to search:");
+        int searchQuery = stdin.nextInt();
+        
+        // Return the pets list
+        return searchPetsByAge(searchQuery);
     }
 }
