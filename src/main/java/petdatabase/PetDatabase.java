@@ -65,6 +65,11 @@ public class PetDatabase {
                     database.consoleAddPets();
                     break;
                     
+                // Search pets by age
+                case 5:
+                    database.consoleViewPets(database.consoleSearchPetsByName());
+                    break;
+                    
                 // Exit
                 case 7:
                     return;
@@ -92,6 +97,26 @@ public class PetDatabase {
     }
     
     /**
+     * Search for pets by name (case insensitive)
+     * @param name name to search
+     * @return list of pets that have the given name
+     */
+    public List<Pet> searchPetsByName(String name) {
+        // Initialize list
+        ArrayList<Pet> list = new ArrayList<>();
+        
+        // Add all pets with a matching name
+        for(Pet pet : pets) {
+            if(pet.getName().equalsIgnoreCase(name)) {
+                list.add(pet);
+            }
+        }
+        
+        // Return the list
+        return list;
+    }
+    
+    /**
      * Array of pets in the database
      */
     private ArrayList<Pet> pets;
@@ -103,7 +128,7 @@ public class PetDatabase {
     
     /**
      * View all pets in the command line
-     * @param petsToShow petsToShow to display
+     * @param petsToShow pets to display
      */
     private void consoleViewPets(List<Pet> petsToShow) {
         // Print the header
@@ -112,13 +137,13 @@ public class PetDatabase {
         System.out.println("+----------------------+");
         
         // Print each pet in the indices array
-        petsToShow.forEach((pet) -> {
+        for(Pet pet : petsToShow) {
             System.out.printf("|%3d | %-10s|%4d |\n", pets.indexOf(pet), pet.getName(), pet.getAge());
-        });
+        }
         
         // Print the footer
         System.out.println("+----------------------+");
-        System.out.printf("%d row%s in set\n", pets.size(), (pets.size() != 1) ? "s" : "");
+        System.out.printf("%d row%s in set\n", petsToShow.size(), (petsToShow.size() != 1) ? "s" : "");
     }
     
     /**
@@ -144,5 +169,18 @@ public class PetDatabase {
         
         // Output how many pets were added.
         System.out.printf("%d pet%s added.\n", petsAdded, (petsAdded != 1) ? "s" : "");
+    }
+    
+    /**
+     * Search for pets by name
+     * @return list of pets to search
+     */
+    private List<Pet> consoleSearchPetsByName() {
+        // Ask for a search query
+        System.out.print("Enter a name to search:");
+        String searchQuery = stdin.next();
+        
+        // Return the pets list
+        return searchPetsByName(searchQuery);
     }
 }
