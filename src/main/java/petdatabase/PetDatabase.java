@@ -103,7 +103,7 @@ public class PetDatabase {
     
     /**
      * View all pets in the command line
-     * @param indices indices to display
+     * @param petsToShow petsToShow to display
      */
     private void consoleViewPets(List<Pet> petsToShow) {
         // Print the header
