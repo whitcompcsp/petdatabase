@@ -8,6 +8,7 @@
 package petdatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -55,7 +56,8 @@ public class PetDatabase {
             switch(selection) {
                 // Show pets
                 case 1:
-                    database.consoleViewAllPets();
+                    // Display the pets
+                    database.consoleViewPets(database.pets);
                     break;
                 
                 // Add pets
@@ -101,17 +103,18 @@ public class PetDatabase {
     
     /**
      * View all pets in the command line
+     * @param indices indices to display
      */
-    private void consoleViewAllPets() {
+    private void consoleViewPets(List<Pet> petsToShow) {
         // Print the header
         System.out.println("+----------------------+");
         System.out.println("| ID | NAME      | AGE |");
         System.out.println("+----------------------+");
         
-        // Print each pet
-        for(int i = 0; i < pets.size(); i++) {
-            System.out.printf("|%3d | %-10s|%4d |\n", i, pets.get(i).getName(), pets.get(i).getAge());
-        }
+        // Print each pet in the indices array
+        petsToShow.forEach((pet) -> {
+            System.out.printf("|%3d | %-10s|%4d |\n", pets.indexOf(pet), pet.getName(), pet.getAge());
+        });
         
         // Print the footer
         System.out.println("+----------------------+");
