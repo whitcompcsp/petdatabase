@@ -8,6 +8,7 @@
 package petdatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -55,12 +56,23 @@ public class PetDatabase {
             switch(selection) {
                 // Show pets
                 case 1:
-                    database.consoleViewAllPets();
+                    // Display the pets
+                    database.consoleViewPets(database.pets);
                     break;
                 
                 // Add pets
                 case 2:
                     database.consoleAddPets();
+                    break;
+                    
+                // Search pets by name
+                case 5:
+                    database.consoleViewPets(database.consoleSearchPetsByName());
+                    break;
+                    
+                // Search pets by age
+                case 6:
+                    database.consoleViewPets(database.consoleSearchPetsByAge());
                     break;
                     
                 // Exit
@@ -90,6 +102,46 @@ public class PetDatabase {
     }
     
     /**
+     * Search for pets by name (case insensitive)
+     * @param name name to search
+     * @return list of pets that have the given name
+     */
+    public List<Pet> searchPetsByName(String name) {
+        // Initialize list
+        ArrayList<Pet> list = new ArrayList<>();
+        
+        // Add all pets with a matching name
+        for(Pet pet : pets) {
+            if(pet.getName().equalsIgnoreCase(name)) {
+                list.add(pet);
+            }
+        }
+        
+        // Return the list
+        return list;
+    }
+    
+    /**
+     * Search for pets by age
+     * @param age age to search
+     * @return list of pets that have the given name
+     */
+    public List<Pet> searchPetsByAge(int age) {
+        // Initialize list
+        ArrayList<Pet> list = new ArrayList<>();
+        
+        // Add all pets with a matching name
+        for(Pet pet : pets) {
+            if(pet.getAge() == age) {
+                list.add(pet);
+            }
+        }
+        
+        // Return the list
+        return list;
+    }
+    
+    /**
      * Array of pets in the database
      */
     private ArrayList<Pet> pets;
@@ -101,21 +153,22 @@ public class PetDatabase {
     
     /**
      * View all pets in the command line
+     * @param petsToShow pets to display
      */
-    private void consoleViewAllPets() {
+    private void consoleViewPets(List<Pet> petsToShow) {
         // Print the header
         System.out.println("+----------------------+");
         System.out.println("| ID | NAME      | AGE |");
         System.out.println("+----------------------+");
         
-        // Print each pet
-        for(int i = 0; i < pets.size(); i++) {
-            System.out.printf("|%3d | %-10s|%4d |\n", i, pets.get(i).getName(), pets.get(i).getAge());
+        // Print each pet in the indices array
+        for(Pet pet : petsToShow) {
+            System.out.printf("|%3d | %-10s|%4d |\n", pets.indexOf(pet), pet.getName(), pet.getAge());
         }
         
         // Print the footer
         System.out.println("+----------------------+");
-        System.out.printf("%d row%s in set\n", pets.size(), (pets.size() != 1) ? "s" : "");
+        System.out.printf("%d row%s in set\n", petsToShow.size(), (petsToShow.size() != 1) ? "s" : "");
     }
     
     /**
@@ -141,5 +194,31 @@ public class PetDatabase {
         
         // Output how many pets were added.
         System.out.printf("%d pet%s added.\n", petsAdded, (petsAdded != 1) ? "s" : "");
+    }
+    
+    /**
+     * Search for pets by name using a name from standard input
+     * @return list of pets to search
+     */
+    private List<Pet> consoleSearchPetsByName() {
+        // Ask for a search query
+        System.out.print("Enter a name to search:");
+        String searchQuery = stdin.next();
+        
+        // Return the pets list
+        return searchPetsByName(searchQuery);
+    }
+    
+    /**
+     * Search for pets by age using an age from standard input
+     * @return list of pets to search
+     */
+    private List<Pet> consoleSearchPetsByAge() {
+        // Ask for a search query
+        System.out.print("Enter age to search:");
+        int searchQuery = stdin.nextInt();
+        
+        // Return the pets list
+        return searchPetsByAge(searchQuery);
     }
 }
