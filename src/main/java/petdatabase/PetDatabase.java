@@ -48,6 +48,10 @@ public class PetDatabase {
                 case 2:
                     database.consoleAddPets();
                     break;
+                    
+                // Exit
+                case 7:
+                    return;
                 
                 // Anything unimplemented goes here
                 default:
