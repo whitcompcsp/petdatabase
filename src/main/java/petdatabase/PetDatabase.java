@@ -53,6 +53,11 @@ public class PetDatabase {
             
             // Choose what to do depending on the input
             switch(selection) {
+                // Show pets
+                case 1:
+                    database.consoleViewAllPets();
+                    break;
+                
                 // Add pets
                 case 2:
                     database.consoleAddPets();
@@ -93,6 +98,25 @@ public class PetDatabase {
      * Scanner object to get input from the user via standard input
      */
     private static Scanner stdin;
+    
+    /**
+     * View all pets in the command line
+     */
+    private void consoleViewAllPets() {
+        // Print the header
+        System.out.println("+----------------------+");
+        System.out.println("| ID | NAME      | AGE |");
+        System.out.println("+----------------------+");
+        
+        // Print each pet
+        for(int i = 0; i < pets.size(); i++) {
+            System.out.printf("|%3d | %-10s|%4d |\n", i, pets.get(i).getName(), pets.get(i).getAge());
+        }
+        
+        // Print the footer
+        System.out.println("+----------------------+");
+        System.out.printf("%d row%s in set\n", pets.size(), (pets.size() != 1) ? "s" : "");
+    }
     
     /**
      * Add pets in the command line
