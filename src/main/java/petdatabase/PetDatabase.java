@@ -69,6 +69,11 @@ public class PetDatabase {
                     database.consoleUpdatePet();
                     break;
                     
+                // Remove a pet
+                case 4:
+                    database.consoleRemovePet();
+                    break;
+                    
                 // Search pets by name
                 case 5:
                     database.consoleViewPets(database.consoleSearchPetsByName());
@@ -155,6 +160,14 @@ public class PetDatabase {
     }
     
     /**
+     * Remove the pet at the given index
+     * @param index ID of the pet to delete
+     */
+    public void removePet(int index) {
+        pets.remove(index);
+    }
+    
+    /**
      * Get the number of pets in the database
      * @return number of pets in the database
      */
@@ -238,6 +251,24 @@ public class PetDatabase {
         Pet petToUpdate = getPet(index);
         petToUpdate.setName(name);
         petToUpdate.setAge(age);
+    }
+    
+    /**
+     * Delete a pet via the command line
+     */
+    private void consoleRemovePet() {
+        // Show a list of pets, first
+        consoleViewPets(pets);
+        System.out.println();
+        
+        // Ask for an ID to update
+        System.out.print("Enter the pet ID to remove:");
+        int index = stdin.nextInt();
+        Pet petToRemove = getPet(index);
+        
+        // Output that we were successful
+        removePet(index);
+        System.out.printf("%s %d is removed.\n", petToRemove.getName(), petToRemove.getAge());
     }
     
     /**
