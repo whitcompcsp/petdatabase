@@ -56,13 +56,22 @@ public class PetDatabase {
             switch(selection) {
                 // Show pets
                 case 1:
-                    // Display the pets
                     database.consoleViewPets(database.pets);
                     break;
                 
                 // Add pets
                 case 2:
                     database.consoleAddPets();
+                    break;
+                    
+                // Update a pet
+                case 3:
+                    database.consoleUpdatePet();
+                    break;
+                    
+                // Remove a pet
+                case 4:
+                    database.consoleRemovePet();
                     break;
                     
                 // Search pets by name
@@ -77,6 +86,7 @@ public class PetDatabase {
                     
                 // Exit
                 case 7:
+                    System.out.println("Goodbye!");
                     return;
                 
                 // Anything unimplemented goes here
@@ -142,6 +152,31 @@ public class PetDatabase {
     }
     
     /**
+     * Get the pet at the given index
+     * @param index ID of the pet to get
+     * @return pet at the index
+     */
+    public Pet getPet(int index) {
+        return pets.get(index);
+    }
+    
+    /**
+     * Remove the pet at the given index
+     * @param index ID of the pet to delete
+     */
+    public void removePet(int index) {
+        pets.remove(index);
+    }
+    
+    /**
+     * Get the number of pets in the database
+     * @return number of pets in the database
+     */
+    public int size() {
+        return pets.size();
+    }
+    
+    /**
      * Array of pets in the database
      */
     private ArrayList<Pet> pets;
@@ -194,6 +229,47 @@ public class PetDatabase {
         
         // Output how many pets were added.
         System.out.printf("%d pet%s added.\n", petsAdded, (petsAdded != 1) ? "s" : "");
+    }
+    
+    /**
+     * Update a pet via the command line
+     */
+    private void consoleUpdatePet() {
+        // Show a list of pets, first
+        consoleViewPets(pets);
+        System.out.println();
+        
+        // Ask for an ID to update
+        System.out.print("Enter the pet ID you can to update:");
+        int index = stdin.nextInt();
+        
+        // Ask for a name an age to update with
+        System.out.print("Enter new name and new age:");
+        String name = stdin.next();
+        int age = stdin.nextInt();
+        
+        // Update the pet
+        Pet petToUpdate = getPet(index);
+        petToUpdate.setName(name);
+        petToUpdate.setAge(age);
+    }
+    
+    /**
+     * Delete a pet via the command line
+     */
+    private void consoleRemovePet() {
+        // Show a list of pets, first
+        consoleViewPets(pets);
+        System.out.println();
+        
+        // Ask for an ID to update
+        System.out.print("Enter the pet ID to remove:");
+        int index = stdin.nextInt();
+        Pet petToRemove = getPet(index);
+        
+        // Output that we were successful
+        removePet(index);
+        System.out.printf("%s %d is removed.\n", petToRemove.getName(), petToRemove.getAge());
     }
     
     /**
