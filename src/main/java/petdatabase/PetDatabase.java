@@ -86,6 +86,7 @@ public class PetDatabase {
                     
                 // Exit
                 case 7:
+                    System.out.println("Goodbye!");
                     return;
                 
                 // Anything unimplemented goes here
