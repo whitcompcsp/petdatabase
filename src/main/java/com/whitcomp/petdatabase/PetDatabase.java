@@ -14,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import javax.naming.LimitExceededException;
 
@@ -200,13 +201,25 @@ public class PetDatabase {
      */
     private void addPet(String petNameAge) throws LimitExceededException {
         // Interrogate it with a Scanner
-        Scanner s = new Scanner(petNameAge);
+        Scanner scanner = new Scanner(petNameAge);
         
-        // Get the name
-        String name = s.next();
+        // Get the name and age
+        String name;
+        int age;
+        try {
+            name = scanner.next();
+            age = scanner.nextInt();
+        }
         
-        // Get the age
-        int age = s.nextInt();
+        // If not, throw an IllegalArgumentException
+        catch (NoSuchElementException e) {
+            throw new IllegalArgumentException(String.format("%s is not valid input.", petNameAge));
+        }
+        
+        // Make sure there's nothing else to add
+        if(scanner.hasNext()) {
+            throw new IllegalArgumentException(String.format("%s is not valid input.", petNameAge));
+        }
         
         // Add the pet
         addPet(new Pet(name, age));
