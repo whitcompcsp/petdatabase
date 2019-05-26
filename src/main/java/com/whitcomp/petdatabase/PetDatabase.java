@@ -8,6 +8,10 @@
 
 package com.whitcomp.petdatabase;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,12 +22,17 @@ import java.util.Scanner;
  */
 public class PetDatabase {
     /**
+     * Default file name of the database.
+     */
+    static final String DEFAULT_FILE_NAME = "pet_database.txt";
+    
+    /**
      * Entry point for the application
      * @param args Command-line arguments (unused)
      */
     public static void main(String[] args) {
         // Initialize a pet database
-        PetDatabase database = new PetDatabase();
+        PetDatabase database = new PetDatabase(DEFAULT_FILE_NAME);
         
         // Initialize a scanner we'll need for getting input from the user
         stdin = new Scanner(System.in);
@@ -48,7 +57,7 @@ public class PetDatabase {
             
             // Get the input
             System.out.print("Your choice: ");
-            int selection = stdin.nextInt();
+            int selection = Integer.parseInt(stdin.nextLine());
             
             // Print out another empty line for padding
             System.out.println();
@@ -85,8 +94,16 @@ public class PetDatabase {
                     database.consoleViewPets(database.consoleSearchPetsByAge());
                     break;
                     
-                // Exit
+                // Exit and save
                 case 7:
+                    // Save
+                    try {
+                        database.save();
+                    }
+                    catch (IOException e) {
+                        // TODO: Error handling
+                    }
+                    
                     System.out.println("Goodbye!");
                     return;
                 
@@ -99,10 +116,54 @@ public class PetDatabase {
     
     /**
      * Create a new database of pets
+     * @param fileName File name of the database
      */
-    public PetDatabase() {
-        pets = new ArrayList<>();
+    public PetDatabase(String fileName) {
+        this.pets = new ArrayList<>();
+        this.fileName = fileName;
+        
+        // Load the pet database from a file
+        File file = new File(fileName);
+        
+        // Open the file if possible
+        FileReader reader = null;
+        Scanner readerScanner = null;
+        try {
+            reader = new FileReader(file);
+            readerScanner = new Scanner(reader);
+            
+            // Keep adding pets while there are no more pets to add
+            while(readerScanner.hasNextLine()) {
+                this.addPet(readerScanner.nextLine());
+            }
+        }
+        
+        // If we get an IO Exception of any kind, clear the database as it's probably corrupt
+        catch (IOException e) {
+            this.pets.clear();
+        }
+        
+        // Close the file if it was opened
+        finally {
+            if(readerScanner != null) {
+                readerScanner.close();
+            }
+            if(reader != null) {
+                try {
+                    reader.close();
+                }
+                catch (IOException e) { }
+            }
+        }
     }
+    
+    /**
+     * Get the file name of the database
+     * @return file name of the database
+     */
+    public String getFileName() {
+        return fileName;
+    };
     
     /**
      * Add a pet to the database
@@ -110,6 +171,24 @@ public class PetDatabase {
      */
     public void addPet(Pet pet) {
         pets.add(pet);
+    }
+    
+    /**
+     * Add a pet to the database
+     * @param petNameAge name and age of the pet to add to the database separated by spaces
+     */
+    private void addPet(String petNameAge) {
+        // Interrogate it with a Scanner
+        Scanner s = new Scanner(petNameAge);
+        
+        // Get the name
+        String name = s.next();
+        
+        // Get the age
+        int age = s.nextInt();
+        
+        // Add the pet
+        pets.add(new Pet(name, age));
     }
     
     /**
@@ -178,6 +257,39 @@ public class PetDatabase {
     }
     
     /**
+     * Save the pet database
+     * @throws IOException thrown if an IOException occurs on writing
+     */
+    public void save() throws IOException {
+        // Attempt to open for writing
+        FileWriter writer = null;
+        try {
+            File file = new File(fileName);
+            writer = new FileWriter(file);
+        }
+        catch (IOException e) {
+            throw e;
+        }
+        
+        // Write each pet
+        try {
+            for(Pet pet : pets) {
+                writer.write(String.format("%s %d\n", pet.getName(), pet.getAge()));
+            }
+        }
+        
+        // If an exception occurs, make sure that the file is closed
+        finally {
+            writer.close();
+        }
+    }
+    
+    /**
+     * File name of the database
+     */
+    private String fileName;
+    
+    /**
      * Array of pets in the database
      */
     private ArrayList<Pet> pets;
@@ -217,14 +329,13 @@ public class PetDatabase {
             System.out.print("add pet (name, age): ");
             
             // If the user types "done" then bail
-            String name = stdin.next();
-            if(name.equals("done")) {
+            String entry = stdin.nextLine();
+            if(entry.equals("done")) {
                 break;
             }
             
             // Add it
-            int age = stdin.nextInt();
-            this.addPet(new Pet(name, age));
+            this.addPet(entry);
             petsAdded++;
         }
         
