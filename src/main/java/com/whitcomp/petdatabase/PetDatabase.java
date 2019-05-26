@@ -200,29 +200,8 @@ public class PetDatabase {
      * @throws LimitExceededException thrown if the database is full
      */
     private void addPet(String petNameAge) throws LimitExceededException {
-        // Interrogate it with a Scanner
-        Scanner scanner = new Scanner(petNameAge);
-        
-        // Get the name and age
-        String name;
-        int age;
-        try {
-            name = scanner.next();
-            age = scanner.nextInt();
-        }
-        
-        // If not, throw an IllegalArgumentException
-        catch (NoSuchElementException e) {
-            throw new IllegalArgumentException(String.format("%s is not valid input.", petNameAge));
-        }
-        
-        // Make sure there's nothing else to add
-        if(scanner.hasNext()) {
-            throw new IllegalArgumentException(String.format("%s is not valid input.", petNameAge));
-        }
-        
         // Add the pet
-        addPet(new Pet(name, age));
+        addPet(Pet.petFromNameAndAge(petNameAge));
     }
     
     /**
@@ -401,12 +380,7 @@ public class PetDatabase {
         
         // Ask for an ID to update
         System.out.print("Enter the pet ID you can to update:");
-        int index = stdin.nextInt();
-        
-        // Ask for a name an age to update with
-        System.out.print("Enter new name and new age:");
-        String name = stdin.next();
-        int age = stdin.nextInt();
+        int index = Integer.parseInt(stdin.nextLine());
         
         // Make sure the index is valid
         if(index < 0 || index >= pets.size()) {
@@ -414,10 +388,13 @@ public class PetDatabase {
             return;
         }
         
+        // Ask for a name an age to update with
+        System.out.print("Enter new name and new age:");
+        String nameAge = stdin.nextLine();
+        
         // Update the pet
         Pet petToUpdate = getPet(index);
-        petToUpdate.setName(name);
-        petToUpdate.setAge(age);
+        petToUpdate.setNameAndAge(nameAge);
     }
     
     /**
