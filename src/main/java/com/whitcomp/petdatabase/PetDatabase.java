@@ -408,6 +408,12 @@ public class PetDatabase {
         String name = stdin.next();
         int age = stdin.nextInt();
         
+        // Make sure the index is valid
+        if(index < 0 || index >= pets.size()) {
+            System.out.printf("Error: ID %d does not exist.\n", index);
+            return;
+        }
+        
         // Update the pet
         Pet petToUpdate = getPet(index);
         petToUpdate.setName(name);
@@ -425,6 +431,14 @@ public class PetDatabase {
         // Ask for an ID to update
         System.out.print("Enter the pet ID to remove:");
         int index = stdin.nextInt();
+        
+        // Make sure the index is valid
+        if(index < 0 || index >= pets.size()) {
+            System.out.printf("Error: ID %d does not exist.\n", index);
+            return;
+        }
+        
+        // Carry on
         Pet petToRemove = getPet(index);
         
         // Output that we were successful
