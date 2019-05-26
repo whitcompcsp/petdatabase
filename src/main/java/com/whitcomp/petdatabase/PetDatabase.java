@@ -128,6 +128,24 @@ public class PetDatabase {
     }
     
     /**
+     * Add a pet to the database
+     * @param petNameAge name and age of the pet to add to the database separated by spaces
+     */
+    private void addPet(String petNameAge) {
+        // Interrogate it with a Scanner
+        Scanner s = new Scanner(petNameAge);
+        
+        // Get the name
+        String name = s.next();
+        
+        // Get the age
+        int age = s.nextInt();
+        
+        // Add the pet
+        pets.add(new Pet(name, age));
+    }
+    
+    /**
      * Search for pets by name (case insensitive)
      * @param name name to search
      * @return list of pets that have the given name
