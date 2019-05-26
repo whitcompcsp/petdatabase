@@ -14,7 +14,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
+import javax.naming.LimitExceededException;
 
 /**
  * The main pet database class.
@@ -25,6 +27,11 @@ public class PetDatabase {
      * Default file name of the database.
      */
     static final String DEFAULT_FILE_NAME = "pet_database.txt";
+    
+    /**
+     * Maximum pets in the database
+     */
+    static final int MAXIMUM_PETS = 5;
     
     /**
      * Entry point for the application
@@ -57,7 +64,15 @@ public class PetDatabase {
             
             // Get the input
             System.out.print("Your choice: ");
-            int selection = Integer.parseInt(stdin.nextLine());
+            int selection;
+            
+            try {
+                selection = Integer.parseInt(stdin.nextLine());
+            }
+            catch (NumberFormatException e) {
+                System.out.println("Error: Please enter a number between 1 and 7.");
+                continue;
+            }
             
             // Print out another empty line for padding
             System.out.println();
@@ -91,7 +106,10 @@ public class PetDatabase {
                     
                 // Search pets by age
                 case 6:
-                    database.consoleViewPets(database.consoleSearchPetsByAge());
+                    try {
+                        database.consoleViewPets(database.consoleSearchPetsByAge());
+                    }
+                    catch (NumberFormatException e) {}
                     break;
                     
                 // Exit and save
@@ -109,7 +127,7 @@ public class PetDatabase {
                 
                 // Anything unimplemented goes here
                 default:
-                    throw new UnsupportedOperationException();
+                    System.out.println("Error: Please enter a number between 1 and 7.");
             }
         }
     }
@@ -128,19 +146,37 @@ public class PetDatabase {
         // Open the file if possible
         FileReader reader = null;
         Scanner readerScanner = null;
+        boolean errorOccurred = false;
+        
         try {
             reader = new FileReader(file);
             readerScanner = new Scanner(reader);
             
             // Keep adding pets while there are no more pets to add
             while(readerScanner.hasNextLine()) {
-                this.addPet(readerScanner.nextLine());
+                // Add a pet
+                try {
+                    // Get the next line
+                    String line = readerScanner.nextLine();
+                    
+                    // Only add lines that have non-whitespace characters in them
+                    if(!line.isBlank()) {
+                        this.addPet(line);
+                    }
+                }
+                
+                // Handle exceptions (can occur if a pet's age is invalid or we reached the limit of pets in the database)
+                catch (IllegalArgumentException | LimitExceededException e) { //Ignore empty lines in the database file
+                    System.out.printf("Error: %s\n", e.getMessage());
+                    errorOccurred = true;
+                    break;
+                }
             }
         }
         
         // If we get an IO Exception of any kind, clear the database as it's probably corrupt
         catch (IOException e) {
-            this.pets.clear();
+            errorOccurred = true;
         }
         
         // Close the file if it was opened
@@ -153,6 +189,11 @@ public class PetDatabase {
                     reader.close();
                 }
                 catch (IOException e) { }
+            }
+            
+            if(errorOccurred) {
+                this.pets.clear();
+                System.out.println("Because an error occurred, the pet database will be cleared.");
             }
         }
     }
@@ -168,27 +209,23 @@ public class PetDatabase {
     /**
      * Add a pet to the database
      * @param pet pet to add to the database
+     * @throws LimitExceededException thrown if the database is full
      */
-    public void addPet(Pet pet) {
+    public void addPet(Pet pet) throws LimitExceededException {
+        if(pets.size() >= MAXIMUM_PETS) {
+            throw new LimitExceededException("Database is full.");
+        }
         pets.add(pet);
     }
     
     /**
      * Add a pet to the database
      * @param petNameAge name and age of the pet to add to the database separated by spaces
+     * @throws LimitExceededException thrown if the database is full
      */
-    private void addPet(String petNameAge) {
-        // Interrogate it with a Scanner
-        Scanner s = new Scanner(petNameAge);
-        
-        // Get the name
-        String name = s.next();
-        
-        // Get the age
-        int age = s.nextInt();
-        
+    private void addPet(String petNameAge) throws LimitExceededException {
         // Add the pet
-        pets.add(new Pet(name, age));
+        addPet(Pet.petFromNameAndAge(petNameAge));
     }
     
     /**
@@ -335,12 +372,26 @@ public class PetDatabase {
             }
             
             // Add it
-            this.addPet(entry);
-            petsAdded++;
+            try {
+                this.addPet(entry);
+                petsAdded++;
+            }
+            
+            // If we got an exception we can handle, log it
+            catch (IllegalArgumentException | LimitExceededException e) {
+                System.out.printf("Error: %s\n", e.getMessage());
+                
+                // If we reached the limit, there is no point in continuing
+                if(e instanceof LimitExceededException) {
+                    break;
+                }
+            }
         }
         
-        // Output how many pets were added.
-        System.out.printf("%d pet%s added.\n", petsAdded, (petsAdded != 1) ? "s" : "");
+        // Output how many pets were added if any were added.
+        if(petsAdded > 0) {
+            System.out.printf("%d pet%s added.\n", petsAdded, (petsAdded != 1) ? "s" : "");
+        }
     }
     
     /**
@@ -353,17 +404,21 @@ public class PetDatabase {
         
         // Ask for an ID to update
         System.out.print("Enter the pet ID you can to update:");
-        int index = stdin.nextInt();
+        int index = Integer.parseInt(stdin.nextLine());
+        
+        // Make sure the index is valid
+        if(index < 0 || index >= pets.size()) {
+            System.out.printf("Error: ID %d does not exist.\n", index);
+            return;
+        }
         
         // Ask for a name an age to update with
         System.out.print("Enter new name and new age:");
-        String name = stdin.next();
-        int age = stdin.nextInt();
+        String nameAge = stdin.nextLine();
         
         // Update the pet
         Pet petToUpdate = getPet(index);
-        petToUpdate.setName(name);
-        petToUpdate.setAge(age);
+        petToUpdate.setNameAndAge(nameAge);
     }
     
     /**
@@ -376,7 +431,25 @@ public class PetDatabase {
         
         // Ask for an ID to update
         System.out.print("Enter the pet ID to remove:");
-        int index = stdin.nextInt();
+        int index;
+        String indexLine = stdin.nextLine();
+        
+        // Make sure it's valid
+        try {
+            index = Integer.parseInt(indexLine);
+        }
+        catch (NumberFormatException e) {
+            System.out.printf("Error: %s is not valid input.\n", indexLine);
+            return;
+        }
+        
+        // Make sure the index is valid
+        if(index < 0 || index >= pets.size()) {
+            System.out.printf("Error: ID %d does not exist.\n", index);
+            return;
+        }
+        
+        // Carry on
         Pet petToRemove = getPet(index);
         
         // Output that we were successful
@@ -391,7 +464,7 @@ public class PetDatabase {
     private List<Pet> consoleSearchPetsByName() {
         // Ask for a search query
         System.out.print("Enter a name to search:");
-        String searchQuery = stdin.next();
+        String searchQuery = stdin.nextLine();
         
         // Return the pets list
         return searchPetsByName(searchQuery);
@@ -404,7 +477,17 @@ public class PetDatabase {
     private List<Pet> consoleSearchPetsByAge() {
         // Ask for a search query
         System.out.print("Enter age to search:");
-        int searchQuery = stdin.nextInt();
+        int searchQuery;
+        String indexLine = stdin.nextLine();
+        
+        // Make sure it's valid
+        try {
+            searchQuery = Integer.parseInt(indexLine);
+        }
+        catch (NumberFormatException e) {
+            System.out.printf("Error: %s is not valid input.\n", indexLine);
+            throw e;
+        }
         
         // Return the pets list
         return searchPetsByAge(searchQuery);
