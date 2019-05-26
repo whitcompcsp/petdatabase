@@ -364,11 +364,18 @@ public class PetDatabase {
             // If we got an exception we can handle, log it
             catch (IllegalArgumentException | LimitExceededException e) {
                 System.out.printf("Error: %s\n", e.getMessage());
+                
+                // If we reached the limit, there is no point in continuing
+                if(e instanceof LimitExceededException) {
+                    break;
+                }
             }
         }
         
-        // Output how many pets were added.
-        System.out.printf("%d pet%s added.\n", petsAdded, (petsAdded != 1) ? "s" : "");
+        // Output how many pets were added if any were added.
+        if(petsAdded > 0) {
+            System.out.printf("%d pet%s added.\n", petsAdded, (petsAdded != 1) ? "s" : "");
+        }
     }
     
     /**
