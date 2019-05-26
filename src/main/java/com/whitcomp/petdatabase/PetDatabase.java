@@ -146,6 +146,8 @@ public class PetDatabase {
         // Open the file if possible
         FileReader reader = null;
         Scanner readerScanner = null;
+        boolean errorOccurred = false;
+        
         try {
             reader = new FileReader(file);
             readerScanner = new Scanner(reader);
@@ -154,21 +156,27 @@ public class PetDatabase {
             while(readerScanner.hasNextLine()) {
                 // Add a pet
                 try {
-                    this.addPet(readerScanner.nextLine());
+                    // Get the next line
+                    String line = readerScanner.nextLine();
+                    
+                    // Only add lines that have non-whitespace characters in them
+                    if(!line.isBlank()) {
+                        this.addPet(line);
+                    }
                 }
                 
                 // Handle exceptions (can occur if a pet's age is invalid or we reached the limit of pets in the database)
-                catch (IllegalArgumentException | LimitExceededException e) {
-                    System.out.flush();
-                    System.err.printf("Error: %s\n", e.getMessage());
-                    System.err.flush();
+                catch (IllegalArgumentException | LimitExceededException e) { //Ignore empty lines in the database file
+                    System.out.printf("Error: %s\n", e.getMessage());
+                    errorOccurred = true;
+                    break;
                 }
             }
         }
         
         // If we get an IO Exception of any kind, clear the database as it's probably corrupt
         catch (IOException e) {
-            this.pets.clear();
+            errorOccurred = true;
         }
         
         // Close the file if it was opened
@@ -181,6 +189,11 @@ public class PetDatabase {
                     reader.close();
                 }
                 catch (IOException e) { }
+            }
+            
+            if(errorOccurred) {
+                this.pets.clear();
+                System.out.println("Because an error occurred, the pet database will be cleared.");
             }
         }
     }
