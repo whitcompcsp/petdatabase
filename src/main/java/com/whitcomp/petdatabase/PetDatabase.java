@@ -53,7 +53,7 @@ public class PetDatabase {
             
             // Get the input
             System.out.print("Your choice: ");
-            int selection = stdin.nextInt();
+            int selection = Integer.parseInt(stdin.nextLine());
             
             // Print out another empty line for padding
             System.out.println();
@@ -255,14 +255,13 @@ public class PetDatabase {
             System.out.print("add pet (name, age): ");
             
             // If the user types "done" then bail
-            String name = stdin.next();
-            if(name.equals("done")) {
+            String entry = stdin.nextLine();
+            if(entry.equals("done")) {
                 break;
             }
             
             // Add it
-            int age = stdin.nextInt();
-            this.addPet(new Pet(name, age));
+            this.addPet(entry);
             petsAdded++;
         }
         
