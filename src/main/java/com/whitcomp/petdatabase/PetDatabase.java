@@ -134,7 +134,17 @@ public class PetDatabase {
             
             // Keep adding pets while there are no more pets to add
             while(readerScanner.hasNextLine()) {
-                this.addPet(readerScanner.nextLine());
+                // Add a pet
+                try {
+                    this.addPet(readerScanner.nextLine());
+                }
+                
+                // Handle illegal argument exceptions (can occur if a pet's age is invalid)
+                catch (IllegalArgumentException e) {
+                    System.out.flush();
+                    System.err.printf("Error: %s\n", e.getMessage());
+                    System.err.flush();
+                }
             }
         }
         
@@ -188,7 +198,7 @@ public class PetDatabase {
         int age = s.nextInt();
         
         // Add the pet
-        pets.add(new Pet(name, age));
+        addPet(new Pet(name, age));
     }
     
     /**
@@ -335,8 +345,15 @@ public class PetDatabase {
             }
             
             // Add it
-            this.addPet(entry);
-            petsAdded++;
+            try {
+                this.addPet(entry);
+                petsAdded++;
+            }
+            
+            // If we got an IllegalArgumentException, log it
+            catch (IllegalArgumentException e) {
+                System.out.printf("Error: %s\n", e.getMessage());
+            }
         }
         
         // Output how many pets were added.
