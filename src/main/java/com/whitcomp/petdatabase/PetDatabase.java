@@ -64,7 +64,15 @@ public class PetDatabase {
             
             // Get the input
             System.out.print("Your choice: ");
-            int selection = Integer.parseInt(stdin.nextLine());
+            int selection;
+            
+            try {
+                selection = Integer.parseInt(stdin.nextLine());
+            }
+            catch (NumberFormatException e) {
+                System.out.println("Error: Please enter a number between 1 and 7.");
+                continue;
+            }
             
             // Print out another empty line for padding
             System.out.println();
@@ -98,7 +106,10 @@ public class PetDatabase {
                     
                 // Search pets by age
                 case 6:
-                    database.consoleViewPets(database.consoleSearchPetsByAge());
+                    try {
+                        database.consoleViewPets(database.consoleSearchPetsByAge());
+                    }
+                    catch (NumberFormatException e) {}
                     break;
                     
                 // Exit and save
@@ -116,7 +127,7 @@ public class PetDatabase {
                 
                 // Anything unimplemented goes here
                 default:
-                    throw new UnsupportedOperationException();
+                    System.out.println("Error: Please enter a number between 1 and 7.");
             }
         }
     }
@@ -407,7 +418,17 @@ public class PetDatabase {
         
         // Ask for an ID to update
         System.out.print("Enter the pet ID to remove:");
-        int index = stdin.nextInt();
+        int index;
+        String indexLine = stdin.nextLine();
+        
+        // Make sure it's valid
+        try {
+            index = Integer.parseInt(indexLine);
+        }
+        catch (NumberFormatException e) {
+            System.out.printf("Error: %s is not valid input.\n", indexLine);
+            return;
+        }
         
         // Make sure the index is valid
         if(index < 0 || index >= pets.size()) {
@@ -430,7 +451,7 @@ public class PetDatabase {
     private List<Pet> consoleSearchPetsByName() {
         // Ask for a search query
         System.out.print("Enter a name to search:");
-        String searchQuery = stdin.next();
+        String searchQuery = stdin.nextLine();
         
         // Return the pets list
         return searchPetsByName(searchQuery);
@@ -443,7 +464,17 @@ public class PetDatabase {
     private List<Pet> consoleSearchPetsByAge() {
         // Ask for a search query
         System.out.print("Enter age to search:");
-        int searchQuery = stdin.nextInt();
+        int searchQuery;
+        String indexLine = stdin.nextLine();
+        
+        // Make sure it's valid
+        try {
+            searchQuery = Integer.parseInt(indexLine);
+        }
+        catch (NumberFormatException e) {
+            System.out.printf("Error: %s is not valid input.\n", indexLine);
+            throw e;
+        }
         
         // Return the pets list
         return searchPetsByAge(searchQuery);
