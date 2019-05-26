@@ -8,6 +8,9 @@
 
 package com.whitcomp.petdatabase;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -109,6 +112,40 @@ public class PetDatabase {
     public PetDatabase(String fileName) {
         this.pets = new ArrayList<>();
         this.fileName = fileName;
+        
+        // Load the pet database from a file
+        File file = new File(fileName);
+        
+        // Open the file if possible
+        FileReader reader = null;
+        Scanner readerScanner = null;
+        try {
+            reader = new FileReader(file);
+            readerScanner = new Scanner(reader);
+            
+            // Keep adding pets while there are no more pets to add
+            while(readerScanner.hasNextLine()) {
+                this.addPet(readerScanner.nextLine());
+            }
+        }
+        
+        // If we get an IO Exception of any kind, clear the database as it's probably corrupt
+        catch (IOException e) {
+            this.pets.clear();
+        }
+        
+        // Close the file if it was opened
+        finally {
+            if(readerScanner != null) {
+                readerScanner.close();
+            }
+            if(reader != null) {
+                try {
+                    reader.close();
+                }
+                catch (IOException e) { }
+            }
+        }
     }
     
     /**
