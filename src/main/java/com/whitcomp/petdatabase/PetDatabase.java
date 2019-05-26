@@ -18,12 +18,17 @@ import java.util.Scanner;
  */
 public class PetDatabase {
     /**
+     * Default file name of the database.
+     */
+    static final String DEFAULT_FILE_NAME = "pet_database.txt";
+    
+    /**
      * Entry point for the application
      * @param args Command-line arguments (unused)
      */
     public static void main(String[] args) {
         // Initialize a pet database
-        PetDatabase database = new PetDatabase();
+        PetDatabase database = new PetDatabase(DEFAULT_FILE_NAME);
         
         // Initialize a scanner we'll need for getting input from the user
         stdin = new Scanner(System.in);
@@ -99,10 +104,20 @@ public class PetDatabase {
     
     /**
      * Create a new database of pets
+     * @param fileName File name of the database
      */
-    public PetDatabase() {
-        pets = new ArrayList<>();
+    public PetDatabase(String fileName) {
+        this.pets = new ArrayList<>();
+        this.fileName = fileName;
     }
+    
+    /**
+     * Get the file name of the database
+     * @return file name of the database
+     */
+    public String getFileName() {
+        return fileName;
+    };
     
     /**
      * Add a pet to the database
@@ -176,6 +191,11 @@ public class PetDatabase {
     public int size() {
         return pets.size();
     }
+    
+    /**
+     * File name of the database
+     */
+    private String fileName;
     
     /**
      * Array of pets in the database
