@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import javax.naming.LimitExceededException;
 
 /**
  * The main pet database class.
@@ -25,6 +26,11 @@ public class PetDatabase {
      * Default file name of the database.
      */
     static final String DEFAULT_FILE_NAME = "pet_database.txt";
+    
+    /**
+     * Maximum pets in the database
+     */
+    static final int MAXIMUM_PETS = 5;
     
     /**
      * Entry point for the application
@@ -139,8 +145,8 @@ public class PetDatabase {
                     this.addPet(readerScanner.nextLine());
                 }
                 
-                // Handle illegal argument exceptions (can occur if a pet's age is invalid)
-                catch (IllegalArgumentException e) {
+                // Handle exceptions (can occur if a pet's age is invalid or we reached the limit of pets in the database)
+                catch (IllegalArgumentException | LimitExceededException e) {
                     System.out.flush();
                     System.err.printf("Error: %s\n", e.getMessage());
                     System.err.flush();
@@ -178,16 +184,21 @@ public class PetDatabase {
     /**
      * Add a pet to the database
      * @param pet pet to add to the database
+     * @throws LimitExceededException thrown if the database is full
      */
-    public void addPet(Pet pet) {
+    public void addPet(Pet pet) throws LimitExceededException {
+        if(pets.size() >= MAXIMUM_PETS) {
+            throw new LimitExceededException("Database is full.");
+        }
         pets.add(pet);
     }
     
     /**
      * Add a pet to the database
      * @param petNameAge name and age of the pet to add to the database separated by spaces
+     * @throws LimitExceededException thrown if the database is full
      */
-    private void addPet(String petNameAge) {
+    private void addPet(String petNameAge) throws LimitExceededException {
         // Interrogate it with a Scanner
         Scanner s = new Scanner(petNameAge);
         
@@ -350,8 +361,8 @@ public class PetDatabase {
                 petsAdded++;
             }
             
-            // If we got an IllegalArgumentException, log it
-            catch (IllegalArgumentException e) {
+            // If we got an exception we can handle, log it
+            catch (IllegalArgumentException | LimitExceededException e) {
                 System.out.printf("Error: %s\n", e.getMessage());
             }
         }
