@@ -10,6 +10,7 @@ package com.whitcomp.petdatabase;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,8 +94,16 @@ public class PetDatabase {
                     database.consoleViewPets(database.consoleSearchPetsByAge());
                     break;
                     
-                // Exit
+                // Exit and save
                 case 7:
+                    // Save
+                    try {
+                        database.save();
+                    }
+                    catch (IOException e) {
+                        // TODO: Error handling
+                    }
+                    
                     System.out.println("Goodbye!");
                     return;
                 
@@ -245,6 +254,34 @@ public class PetDatabase {
      */
     public int size() {
         return pets.size();
+    }
+    
+    /**
+     * Save the pet database
+     * @throws IOException thrown if an IOException occurs on writing
+     */
+    public void save() throws IOException {
+        // Attempt to open for writing
+        FileWriter writer = null;
+        try {
+            File file = new File(fileName);
+            writer = new FileWriter(file);
+        }
+        catch (IOException e) {
+            throw e;
+        }
+        
+        // Write each pet
+        try {
+            for(Pet pet : pets) {
+                writer.write(String.format("%s %d\n", pet.getName(), pet.getAge()));
+            }
+        }
+        
+        // If an exception occurs, make sure that the file is closed
+        finally {
+            writer.close();
+        }
     }
     
     /**
